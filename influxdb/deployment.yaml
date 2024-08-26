@@ -1,0 +1,46 @@
+# plex/deployment.yaml
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: influxdb
+  namespace: influxdb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: influxdb
+  template:
+    spec:
+      securityContext:
+        runAsUser: 0
+        runAsGroup: 0
+        fsGroup: 1000    
+      containers:
+        - name: influxdb
+          image: influxdb:1.8.10
+          resources:    
+          envFrom:
+            - configMapRef:
+                name: influxdb-env
+          volumeMounts:
+            - name: data
+              mountPath: /root/.influxdb/data
+            - name: config
+              mountPath: /etc/influxdb      
+          securityContext:
+            privileged: true     
+            capabilities:
+              drop: ["ALL"]              
+      volumes:
+        - name: config
+          nfs:
+            server: 192.168.50.43
+            path: /mnt/k3s_share/influxdb/config
+        - name: data
+          nfs:
+            server: 192.168.50.43
+            path: /mnt/k3s_share/influxdb/data
+
+
+
+

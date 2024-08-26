@@ -1,0 +1,23 @@
+# plex/kustomization.yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+commonLabels:
+  app: influxdb
+
+configMapGenerator:
+  - name: influxdb-env
+    namespace: influxdb
+    literals:
+      - TZ="Europe/Budapest",
+      - PUID="1000",
+      - PGID="1000",
+      - DOCKER_INFLUXDB_INIT_MODE="setup"
+      - DOCKER_INFLUXDB_INIT_ORG="docs"
+      - DOCKER_INFLUXDB_INIT_BUCKET="home"
+      - DOCKER_INFLUXDB_INIT_USERNAME="jolcsak"
+      - DOCKER_INFLUXDB_INIT_PASSWORD="Grenoble78"
+resources:
+  - svc.yaml
+  - ns.yaml
+  - deployment.yaml
+  - ingress.yaml

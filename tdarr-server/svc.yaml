@@ -1,0 +1,21 @@
+# plex/svc.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: tdarr
+  namespace: tdarr
+  annotations:
+    io.cilium/lb-ipam-ips: 192.168.50.43
+spec:
+  selector:
+    app: tdarr
+  type: LoadBalancer
+  ports:
+    - port: 8265               # < port to open on the outside on the server
+      targetPort: 8265         # < targetport. port on the pod to passthrough
+      name: tdarr1             # < reference name for the port in the deployment yaml
+      protocol: TCP
+    - port: 8266
+      targetPort: 8266
+      name: tdarr2
+      protocol: TCP

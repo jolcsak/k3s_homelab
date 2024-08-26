@@ -1,0 +1,40 @@
+# plex/deployment.yaml
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: sonarr
+  namespace: sonarr
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sonarr
+  template:
+    spec:
+      containers:
+        - name: jackett
+          image: lscr.io/linuxserver/sonarr:latest
+          resources:    
+          envFrom:
+            - configMapRef:
+                name: sonarr-env
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: series
+              mountPath: /series
+          securityContext:
+            privileged: true
+            capabilities:
+              drop: ["ALL"]              
+      volumes:
+        - name: config
+          nfs:
+            server: 192.168.50.43
+            path: /mnt/k3s_share/sonarr/config
+        - name: series
+          nfs:
+            server: 192.168.50.41
+            path: /volume1/series
+
+

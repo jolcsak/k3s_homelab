@@ -1,0 +1,18 @@
+# plex/kustomization.yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+commonLabels:
+  app: frigate
+
+configMapGenerator:
+  - name: frigate-env
+    namespace: frigate
+    literals:
+      - TZ="Europe/Budapest",
+      - PUID="1000",
+      - PGID="1000",
+resources:
+  - svc.yaml
+  - ns.yaml
+  - deployment.yaml
+  - ingress.yaml

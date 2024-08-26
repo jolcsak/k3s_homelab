@@ -1,0 +1,17 @@
+# plex/svc.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: sonarr
+  namespace: sonarr
+  annotations:
+    io.cilium/lb-ipam-ips: 192.168.50.43
+spec:
+  selector:
+    app: sonarr
+  type: LoadBalancer
+  ports:
+    - port: 8989               # < port to open on the outside on the server
+      targetPort: 8989         # < targetport. port on the pod to passthrough
+      name: sonarr             # < reference name for the port in the deployment yaml
+      protocol: TCP

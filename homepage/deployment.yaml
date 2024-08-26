@@ -1,0 +1,40 @@
+# plex/deployment.yaml
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: homepage
+  namespace: homepage
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: homepage
+  template:
+    spec:
+      securityContext:
+        runAsUser: 0
+        runAsGroup: 0
+        fsGroup: 1000    
+      containers:
+        - name: homepage
+          image: ghcr.io/gethomepage/homepage:latest
+          resources:    
+          envFrom:
+            - configMapRef:
+                name: homepage-env
+          volumeMounts:
+            - name: config
+              mountPath: /app/config   
+          securityContext:
+            privileged: true     
+            capabilities:
+              drop: ["ALL"]              
+      volumes:
+        - name: config
+          nfs:
+            server: 192.168.50.43
+            path: /mnt/k3s_share/homepage/config
+
+
+
+

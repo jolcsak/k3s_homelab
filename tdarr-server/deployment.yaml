@@ -1,0 +1,66 @@
+# plex/deployment.yaml
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: tdarr
+  namespace: tdarr
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tdarr
+  template:
+    spec:
+      containers:
+        - name: tdarr
+          image: haveagitgat/tdarr:latest
+          resources:
+            requests:
+              gpu.intel.com/i915: 1
+              cpu: 500m
+              memory: 2000Mi
+            limits:
+              gpu.intel.com/i915: 1
+              memory: 5000Mi          
+          envFrom:
+            - configMapRef:
+                name: tdarr-env
+          ports:
+            - containerPort: 8265
+              name: tdarr1
+              protocol: TCP
+            - containerPort: 8266
+              name: tdarr2
+              protocol: TCP
+          volumeMounts:
+            - name: server
+              mountPath: /app/server
+            - name: configs
+              mountPath: /app/configs
+            - name: logs
+              mountPath: /app/logs
+            - name: videos
+              mountPath: /media/movies
+          securityContext:
+            privileged: true
+            capabilities:
+              drop: ["ALL"]              
+      volumes:
+        - name: server
+          nfs:
+            server: 192.168.50.43
+            path: /mnt/k3s_share/tdarr/server
+        - name: configs
+          nfs:
+            server: 192.168.50.43
+            path: /mnt/k3s_share/tdarr/configs
+        - name: logs
+          nfs:
+            server: 192.168.50.43
+            path: /mnt/k3s_share/tdarr/logs
+        - name: videos
+          nfs:
+            server: 192.168.50.40
+            path: /volume1/homes/jolcsak/Private/sss
+
+

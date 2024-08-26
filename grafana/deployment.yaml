@@ -1,0 +1,35 @@
+# plex/deployment.yaml
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: grafana
+  namespace: grafana
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    spec:
+      containers:
+        - name: grafana
+          image: grafana/grafana:latest
+          resources:    
+          envFrom:
+            - configMapRef:
+                name: grafana-env
+          volumeMounts:
+            - name: storage
+              mountPath: /var/lib/grafana
+          securityContext:
+            privileged: true
+            capabilities:
+              drop: ["ALL"]              
+      volumes:
+        - name: storage
+          nfs:
+            server: 192.168.50.43
+            path: /mnt/k3s_share/grafana
+
+
+

@@ -1,0 +1,18 @@
+# plex/kustomization.yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+commonLabels:
+  app: jackett
+
+configMapGenerator:
+  - name: jackett-env
+    namespace: jackett
+    literals:
+      - TZ="Europe/Budapest",
+      - PUID="0",
+      - PGID="0"
+resources:
+  - svc.yaml
+  - ns.yaml
+  - deployment.yaml
+  - ingress.yaml

@@ -1,0 +1,59 @@
+# plex/deployment.yaml
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: frigate
+  namespace: frigate
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frigate
+  template:
+    spec:
+      securityContext:
+        runAsUser: 0
+        runAsGroup: 0
+        fsGroup: 1000    
+      containers:
+        - name: frigate
+          image: ghcr.io/blakeblackshear/frigate:stable
+          resources:
+            requests:
+              gpu.intel.com/i915: 1
+              cpu: 500m
+              memory: 2000Mi
+            limits:
+              gpu.intel.com/i915: 1
+              memory: 5000Mi
+          envFrom:
+            - configMapRef:
+                name: frigate-env
+          volumeMounts:
+            - name: data
+              mountPath: /media/frigate
+            - name: config
+              mountPath: /config
+            - name: temp
+              mountPath: /tmp/cache
+          securityContext:
+            privileged: true     
+            capabilities:
+              drop: ["ALL"]              
+      volumes:
+        - name: config
+          nfs:
+            server: 192.168.50.43
+            path: /mnt/k3s_share/frigate/config
+        - name: data
+          nfs:
+            server: 192.168.50.43
+            path: /mnt/k3s_share/frigate/data
+        - name: temp
+          emptyDir:
+            medium: Memory
+            sizeLimit: 512Mi         
+
+
+
+
