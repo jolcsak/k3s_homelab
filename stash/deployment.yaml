@@ -17,6 +17,13 @@ spec:
         - name: stash
           image: stashapp/stash:latest
           resources:
+            requests:
+              gpu.intel.com/i915: 1
+              cpu: 500m
+              memory: 2000Mi
+            limits:
+              gpu.intel.com/i915: 1
+              memory: 5000Mi          
           envFrom:
             - configMapRef:
                 name: stash-env
