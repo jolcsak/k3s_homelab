@@ -1,0 +1,24 @@
+# plex/kustomization.yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+commonLabels:
+  app: stash
+
+configMapGenerator:
+  - name: stash-env
+    namespace: stash
+    literals:
+      - TZ="Europe/Budapest",
+      - PUID="0",
+      - PGID="0"
+      - STASH_STASH="/data/""
+      - STASH_GENERATED="/generated/"
+      - STASH_METADATA="/metadata/"
+      - STASH_CACHE="/cache/""
+      ## Adjust below to change default port (9999)
+      - STASH_PORT="9999"
+resources:
+  - svc.yaml
+  - ns.yaml
+  - deployment.yaml
+  - ingress.yaml

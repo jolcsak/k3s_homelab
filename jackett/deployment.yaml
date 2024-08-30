@@ -14,7 +14,7 @@ spec:
       containers:
         - name: jackett
           image: lscr.io/linuxserver/jackett:latest
-          resources:    
+          resources:
           envFrom:
             - configMapRef:
                 name: jackett-env

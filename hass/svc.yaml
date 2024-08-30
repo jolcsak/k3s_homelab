@@ -1,0 +1,21 @@
+# plex/svc.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: hass
+  namespace: hass
+  annotations:
+    io.cilium/lb-ipam-ips: 192.168.50.43
+spec:
+  selector:
+    app: hass
+  type: LoadBalancer
+  ports:
+    - port: 8123               # < port to open on the outside on the server
+      targetPort: 8123         # < targetport. port on the pod to passthrough
+      name: hass               # < reference name for the port in the deployment yaml
+      protocol: TCP
+    - port: 8124               # < port to open on the outside on the server
+      targetPort: 8124         # < targetport. port on the pod to passthrough
+      name: hasshttps         # < reference name for the port in the deployment yaml
+      protocol: TCP      

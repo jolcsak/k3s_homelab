@@ -1,0 +1,74 @@
+# plex/deployment.yaml
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: stash
+  namespace: stash
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: stash
+  template:
+    spec:
+      nodeSelector:
+        node-type: primary
+      containers:
+        - name: stash
+          image: stashapp/stash:latest
+          resources:
+          envFrom:
+            - configMapRef:
+                name: stash-env
+          volumeMounts:
+            - name: config
+              mountPath: /root/.stash
+            - name: data
+              mountPath: /data
+            - name: metadata
+              mountPath: /metadata
+            - name: cache
+              mountPath: /cache
+            - name: blobs
+              mountPath: /blobs
+            - name: generated
+              mountPath: /generated
+            - name: media
+              mountPath: /media
+          securityContext:
+            privileged: true
+            capabilities:
+              drop: ["ALL"]              
+      volumes:
+        - name: config
+          nfs:
+            server: 192.168.50.43
+            path: /mnt/k3s_share/stash/config
+        - name: data
+          nfs:
+            server: 192.168.50.43
+            path: /mnt/k3s_share/stash/data
+        - name: metadata
+          nfs:
+            server: 192.168.50.43
+            path: /mnt/k3s_share/stash/metadata
+        - name: cache
+          nfs:
+            server: 192.168.50.43
+            path: /mnt/k3s_share/stash/cache
+        - name: blobs
+          nfs:
+            server: 192.168.50.43
+            path: /mnt/k3s_share/stash/blobs
+        - name: generated
+          nfs:
+            server: 192.168.50.43
+            path: /mnt/k3s_share/stash/generated
+        - name: media
+          nfs:
+            server: 192.168.50.40
+            path: /volume1/homes/jolcsak/Private
+
+
+
+

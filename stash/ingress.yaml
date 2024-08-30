@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: stash
+  namespace: stash
+spec:
+  rules:
+    - host: stash.h
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: stash
+                port:
+                  number: 9999
