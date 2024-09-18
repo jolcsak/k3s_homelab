@@ -1,0 +1,49 @@
+# plex/deployment.yaml
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: stash
+  namespace: stash
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: stash
+  template:
+    spec:
+      nodeSelector:
+        node-type: worker
+      containers:
+        - name: stash
+          image: stashapp/stash:latest
+          resources:
+            requests:
+              gpu.intel.com/i915: 1
+            limits:
+              gpu.intel.com/i915: 1
+          envFrom:
+            - configMapRef:
+                name: stash-env
+          volumeMounts:
+            - name: config
+              mountPath: /root/.stash
+            - name: media
+              mountPath: /media
+          securityContext:
+            privileged: true
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: stash-pvc
+        - name: data
+          nfs:
+            server: 192.168.50.43
+            path: /mnt/k3s_share/stash/data
+        - name: media
+          nfs:
+            server: 192.168.50.40
+            path: /volume1/homes/jolcsak/Private
+
+
+
+

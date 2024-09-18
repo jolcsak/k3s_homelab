@@ -13,15 +13,12 @@ spec:
     spec:
       containers:
         - name: tdarr-node
-          image: haveagitgat/tdarr_node:latest
+          image: haveagitgat/tdarr_node:2.25.01
           resources:
             requests:
               gpu.intel.com/i915: 1
-              cpu: 500m
-              memory: 2000Mi
             limits:
               gpu.intel.com/i915: 1
-              memory: 5000Mi          
           envFrom:
             - configMapRef:
                 name: tdarr-node-env

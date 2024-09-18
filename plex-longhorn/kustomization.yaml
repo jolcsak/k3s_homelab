@@ -1,0 +1,19 @@
+# plex/kustomization.yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+commonLabels:
+  app: plex
+
+configMapGenerator:
+  - name: plex-env
+    namespace: plex
+    literals:
+      - TZ="Europe/Budapest"
+      - PLEX_CLAIM="claim-_bj9HrDkD5b6DTSYdWYA"
+
+resources:
+  - ns.yaml
+  - svc.yaml
+  - secret.yaml
+  - deployment.yaml
+  - ingress.yaml

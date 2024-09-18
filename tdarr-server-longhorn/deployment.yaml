@@ -1,0 +1,56 @@
+# plex/deployment.yaml
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: tdarr
+  namespace: tdarr
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tdarr
+  template:
+    spec:
+      containers:
+        - name: tdarr
+          image: haveagitgat/tdarr:2.25.01
+          resources:
+            requests:
+              gpu.intel.com/i915: 1
+              cpu: 500m
+              memory: 2000Mi
+            limits:
+              gpu.intel.com/i915: 1
+              memory: 5000Mi          
+          envFrom:
+            - configMapRef:
+                name: tdarr-env
+          ports:
+            - containerPort: 8265
+              name: tdarr1
+              protocol: TCP
+            - containerPort: 8266
+              name: tdarr2
+              protocol: TCP
+          volumeMounts:
+            - name: server
+              mountPath: /app/server
+            - name: configs
+              mountPath: /app/configs
+            - name: videos
+              mountPath: /media/movies
+          securityContext:
+            privileged: true           
+      volumes:
+        - name: server
+          persistentVolumeClaim:
+            claimName: tdarr-server-pvc
+        - name: configs
+          persistentVolumeClaim:
+            claimName: tdarr-server-configs-pvc
+        - name: videos
+          nfs:
+            server: 192.168.50.40
+            path: /volume1/homes/jolcsak/Private/sss
+
+
